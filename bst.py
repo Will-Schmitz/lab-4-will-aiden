@@ -20,3 +20,4 @@ class BinarySearchTree:
 #Return True iff the BST has no nodes
 def is_empty(bst: BinarySearchTree) -> bool:
     return bst.tree is None
+

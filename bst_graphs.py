@@ -37,5 +37,40 @@ def example_graph_creation() -> None:
     plt.legend() # makes the 'label's show up 
     plt.show() 
  
+
+#Function random_tree takes an integer n and generates a BST containing n random floats[0,1]
+def random_tree(n: int) -> BinarySearchTree:
+    if n < 0:
+        raise ValueError("n must be non-negative")
+
+    bst = BinarySearchTree(comes_before=lambda a, b: a < b, tree=None)
+    for _ in range(n):
+        bst = bst.insert(random.random())
+    return bst
+
+
+def tree_height_graph_creation() -> None: 
+   def f_to_graph(N: int) -> float:
+    # returns the *average height* of random BSTs of size N
+    heights = []
+    for _ in range(TREES_PER_RUN):
+        bst = _build_random_tree(N)     # builds by calling insert(...) N times
+        heights.append(_height(bst.tree))
+    return mean(heights)
+
+x_numpy: np.ndarray = np.linspace(0, n_max, 50, dtype=int)
+x_numpy = np.unique(x_numpy)  # avoid duplicates if n_max is small
+
+y_coords = [average_height(N) for N in x_numpy]
+y_numpy: np.ndarray = np.array(y_coords)
+
+plt.plot(x_numpy, y_numpy, label='Average Height')
+plt.xlabel("N (number of nodes)")
+plt.ylabel("Average Tree Height")
+plt.title("Average Tree Height vs N (random BSTs)")
+plt.grid(True)
+plt.legend()
+plt.show()
+
 if (__name__ == '__main__'): 
     example_graph_creation() 
