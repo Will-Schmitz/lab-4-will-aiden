@@ -3,74 +3,56 @@ import unittest
 from typing import * 
 from dataclasses import dataclass 
 import math 
+from statistics import mean
 import matplotlib.pyplot as plt 
 import numpy as np 
 import random 
+from bst import *
 sys.setrecursionlimit(10**6) 
  
 from bst import * 
  
 TREES_PER_RUN : int = 10000 
- 
-def example_graph_creation() -> None: 
-    # Return log-base-2 of 'x' + 5. 
-    def f_to_graph( x : float ) -> float: 
-        return math.log2( x ) + 5.0 
- 
-    # here we're using "list comprehensions": more of Python's 
-    # syntax sugar. 
-    x_coords : List[float] = [ float(i) for i in range( 1, 100 ) ] 
-    y_coords : List[float] = [ f_to_graph( x ) for x in x_coords ] 
- 
-    # Could have just used this type from the start, but I want 
-    # to emphasize that 'matplotlib' uses 'numpy''s specific array 
-    # type, which is different from the built-in Python array 
-    # type. 
-    x_numpy : np.ndarray = np.array( x_coords ) 
-    y_numpy : np.ndarray = np.array( y_coords ) 
- 
-    plt.plot( x_numpy, y_numpy, label = 'log_2(x)' )  
-    plt.xlabel("X") 
-    plt.ylabel("Y") 
-    plt.title("Example Graph") 
-    plt.grid(True) 
-    plt.legend() # makes the 'label's show up 
-    plt.show() 
- 
+
+def height(BT: BinTree) -> int:
+    """Height in edges: empty = -1, leaf = 0. Change if your course uses nodes instead."""
+    if BT is None:
+     return -1
+    return 1 + max(height(BT.left), height(BT.right))
 
 #Function random_tree takes an integer n and generates a BST containing n random floats[0,1]
 def random_tree(n: int) -> BinarySearchTree:
-    if n < 0:
-        raise ValueError("n must be non-negative")
-
     bst = BinarySearchTree(comes_before=lambda a, b: a < b, tree=None)
+    cb = bst.comes_before
+    t = bst.tree
     for _ in range(n):
-        bst = bst.insert(random.random())
-    return bst
+        t = insert(cb, t, random.random())  # <-- use your insert(cb, t, x)
+    return BinarySearchTree(cb, t)
 
 
-def tree_height_graph_creation() -> None: 
-   def f_to_graph(N: int) -> float:
-    # returns the *average height* of random BSTs of size N
-    heights = []
-    for _ in range(TREES_PER_RUN):
-        bst = _build_random_tree(N)     # builds by calling insert(...) N times
-        heights.append(_height(bst.tree))
-    return mean(heights)
+def tree_height_graph_creation(n_max: int, TREES_PER_RUN: int = 10_000) -> None:
+    # 50 evenly spaced N from 0..n_max (list first)
+    x_coords = [int(n) for n in np.linspace(0, n_max, 50)]
+    x_coords = sorted(set(x_coords))  # avoid duplicates if n_max is small
 
-x_numpy: np.ndarray = np.linspace(0, n_max, 50, dtype=int)
-x_numpy = np.unique(x_numpy)  # avoid duplicates if n_max is small
+    # average height at each N (list)
+    y_coords = [
+        mean(height(random_tree(N).tree) for _ in range(TREES_PER_RUN))
+        for N in x_coords
+    ]
 
-y_coords = [average_height(N) for N in x_numpy]
-y_numpy: np.ndarray = np.array(y_coords)
+    # convert to NumPy
+    x_numpy = np.array(x_coords)
+    y_numpy = np.array(y_coords)
 
-plt.plot(x_numpy, y_numpy, label='Average Height')
-plt.xlabel("N (number of nodes)")
-plt.ylabel("Average Tree Height")
-plt.title("Average Tree Height vs N (random BSTs)")
-plt.grid(True)
-plt.legend()
-plt.show()
+    # plot
+    plt.plot(x_numpy, y_numpy, label="Average Height")
+    plt.xlabel("N (number of nodes)")
+    plt.ylabel("Average Tree Height")
+    plt.title("Average Tree Height vs N (random BSTs)")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
 
 if (__name__ == '__main__'): 
-    example_graph_creation() 
+    tree_height_graph_creation(300) 
