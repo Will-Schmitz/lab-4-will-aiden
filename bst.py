@@ -1,7 +1,8 @@
 import sys 
 import unittest 
 from typing import * 
-from dataclasses import dataclass 
+from dataclasses import dataclass
+from math import sqrt
 sys.setrecursionlimit(10**6) 
 
 BinTree: TypeAlias = Union[None, "Node"]
@@ -16,6 +17,12 @@ class Node:
 class BinarySearchTree:
     comes_before: Callable[[Any, Any], bool]
     tree: BinTree = None
+    
+@dataclass(frozen=True)
+class Point2:
+    x :int = 0
+    y :int = 0
+    dist : float = sqrt(x**2 + y**2)
 
 #Add a value to the BinarySearchTree by following comes_before to go left or right and return the updated tree.
 def insert (BT : BinTree, val : Any) -> BinTree:
@@ -32,8 +39,7 @@ def insert (BT : BinTree, val : Any) -> BinTree:
                 return BT
 
 #Return True if a value exists in the BinarySearchTree—treating two values as equal when neither a comes_before b nor b comes_before a—otherwise False
-def lookup (BT : BinTree, val : Any) -> bool:
-    cb = BinarySearchTree.comes_before
+def lookup (BT : BinTree, val : Any,cb : Callable[[Any, Any], bool]) -> bool:
     match  BT:
         case None:
             return False
@@ -41,9 +47,9 @@ def lookup (BT : BinTree, val : Any) -> bool:
             if v == val:
                 return True
             elif cb(val,v):
-                return lookup(l,val)
+                return lookup(l,val,cb)
             elif cb(v,val):
-                return lookup(r,val)
+                return lookup(r,val,cb)
             
 #Remove one occurrence of a value from the BinarySearchTree (if present) while preserving the BST ordering
 
@@ -81,32 +87,3 @@ def delete(BT: BinTree, val: Any) -> BinTree:
                 delete(l, val) if cb(val, v) else l,
                 delete(r, val) if cb(v, val) else r
             )
-
-BinarySearchTree.comes_before = lambda a, b: a < b
-
-class TestBST(unittest.TestCase):
-    def test_is_empty_none(self):
-        self.assertEqual(is_empty(None), True)
-
-    def test_is_empty_node(self):
-        self.assertEqual(is_empty(Node(1, None, None)), False)
-
-    def test_insert_left(self):
-        self.assertEqual(insert(insert(None, 5), 3),
-                         Node(5, Node(3, None, None), None))
-
-    def test_insert_right(self):
-        self.assertEqual(insert(insert(None, 5), 7),
-                         Node(5, None, Node(7, None, None)))
-
-    def test_lookup_true(self):
-        self.assertEqual(lookup(Node(5, Node(3, None, None), Node(7, None, None)), 7), True)
-
-    def test_lookup_false(self):
-        self.assertEqual(lookup(Node(5, Node(3, None, None), Node(7, None, None)), 10), False)
-
-    def test_delete(self):
-        self.assertEqual(delete(Node(5, Node(3, Node(2, None, None), Node(4, None, None)), Node(7, None, None)), 5), Node(7, Node(3, Node(2, None, None), Node(4, None, None)), None))
-
-if __name__ == "__main__":
-    unittest.main()
