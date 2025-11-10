@@ -20,15 +20,6 @@ def height(BT: BinTree) -> int:
      return -1
     return 1 + max(height(BT.left), height(BT.right))
 
-#Function random_tree takes an integer n and generates a BST containing n random floats[0,1]
-def random_tree(n: int) -> BinarySearchTree:
-    bst = BinarySearchTree(comes_before=lambda a, b: a < b, tree=None)
-    t = bst.tree
-    for _ in range(n):
-        t = insert(t, random.random())  
-    return BinarySearchTree(bst.comes_before, t)
-
-
 def tree_height_graph_creation(n_max: int, TREES_PER_RUN: int = 10_000) -> None:
     # 50 evenly spaced N from 0..n_max (list first)
     x_coords = [int(n) for n in np.linspace(0, n_max, 50)]
@@ -50,17 +41,22 @@ def tree_height_graph_creation(n_max: int, TREES_PER_RUN: int = 10_000) -> None:
     plt.legend()
     plt.show()
 
+def random_tree(n: int) -> BinarySearchTree:
+    cb = lambda a, b: a < b
+    bst = BinarySearchTree(comes_before=cb, tree=None)
+    t = bst.tree
+    for _ in range(n):
+        t = insert(t, random.random(), cb)   # pass cb
+    return BinarySearchTree(cb, t)
 
 def time_insert_once(N: int) -> float:
-    # build a random BST of size N
-    bst = BinarySearchTree(comes_before=lambda a, b: a < b, tree=None)
+    cb = lambda a, b: a < b
     t = None
     for _ in range(N):
-        t = insert(t, random.random()) 
-    # time inserting one extra value
+        t = insert(t, random.random(), cb)   # pass cb
     x = random.random()
     t0 = time.perf_counter()
-    t = insert(t, x)  
+    t = insert(t, x, cb)                      # pass cb
     return time.perf_counter() - t0
 
 def insert_time_graph_creation(n_max: int, TREES_PER_RUN: int = 10_000) -> None:

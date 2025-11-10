@@ -1,14 +1,16 @@
-import sys 
-import unittest 
-from typing import * 
-from dataclasses import dataclass 
-sys.setrecursionlimit(10**6) 
+# bst_tests.py
+import sys
+import unittest
+from typing import *
+from dataclasses import dataclass
+sys.setrecursionlimit(10**6)
 
-from bst import * 
+from bst import *
 
 class TestBST_int(unittest.TestCase):
-    BinarySearchTree.comes_before = lambda a, b: a < b
-    
+    def setUp(self):
+        self.cb = lambda a, b: a < b
+
     def test_is_empty_none(self):
         self.assertEqual(is_empty(None), True)
 
@@ -16,99 +18,112 @@ class TestBST_int(unittest.TestCase):
         self.assertEqual(is_empty(Node(1, None, None)), False)
 
     def test_insert_left(self):
-        self.assertEqual(insert(insert(None, 5), 3),
-                         Node(5, Node(3, None, None), None))
+        T = None
+        T = insert(T, 5, self.cb)
+        T = insert(T, 3, self.cb)
+        self.assertEqual(T, Node(5, Node(3, None, None), None))
 
     def test_insert_right(self):
-        self.assertEqual(insert(insert(None, 5), 7),
-                         Node(5, None, Node(7, None, None)))
+        T = None
+        T = insert(T, 5, self.cb)
+        T = insert(T, 7, self.cb)
+        self.assertEqual(T, Node(5, None, Node(7, None, None)))
 
     def test_lookup_true(self):
-        cb = BinarySearchTree.comes_before = lambda a, b: a < b
-        self.assertEqual(lookup(Node(5, Node(3, None, None), Node(7, None, None)), 7,cb), True)
+        T = Node(5, Node(3, None, None), Node(7, None, None))
+        self.assertEqual(lookup(T, 7, self.cb), True)
 
     def test_lookup_false(self):
-        cb = BinarySearchTree.comes_before = lambda a, b: a < b
-        self.assertEqual(lookup(Node(5, Node(3, None, None), Node(7, None, None)), 10,cb), False)
+        T = Node(5, Node(3, None, None), Node(7, None, None))
+        self.assertEqual(lookup(T, 10, self.cb), False)
 
     def test_delete(self):
-        self.assertEqual(delete(Node(5, Node(3, Node(2, None, None), Node(4, None, None)), Node(7, None, None)), 5), Node(7, Node(3, Node(2, None, None), Node(4, None, None)), None))
+        T = Node(5, Node(3, Node(2, None, None), Node(4, None, None)), Node(7, None, None))
+        self.assertEqual(
+            delete(T, 5, self.cb),
+            Node(7, Node(3, Node(2, None, None), Node(4, None, None)), None)
+        )
 
-
-    
 class TestBST_Alphabetical(unittest.TestCase):
-    BinarySearchTree.comes_before = lambda a, b: a < b
-    
+    def setUp(self):
+        self.cb = lambda a, b: a < b
+
     def test_is_empty_none_2(self):
         self.assertEqual(is_empty(None), True)
-    
+
     def test_is_empty_node_2(self):
         self.assertEqual(is_empty(Node("a", None, None)), False)
-    
+
     def test_insert_left_2(self):
-        self.assertEqual(insert(insert(None, "b"), "a"),
-                         Node("b", Node("a", None, None), None))
+        T = None
+        T = insert(T, "b", self.cb)
+        T = insert(T, "a", self.cb)
+        self.assertEqual(T, Node("b", Node("a", None, None), None))
+
     def test_insert_right_2(self):
-        self.assertEqual(insert(insert(None, "a"), "b"),
-                         Node("a", None, Node("b", None, None)))
+        T = None
+        T = insert(T, "a", self.cb)
+        T = insert(T, "b", self.cb)
+        self.assertEqual(T, Node("a", None, Node("b", None, None)))
+
     def test_lookup_true_2(self):
-        cb = BinarySearchTree.comes_before = lambda a, b: a < b
-        self.assertEqual(lookup(Node("b", Node("a", None, None), Node("b", None, None)), "b",cb), True)
-        
+        T = Node("b", Node("a", None, None), Node("b", None, None))
+        self.assertEqual(lookup(T, "b", self.cb), True)
+
     def test_lookup_false_2(self):
-        cb = BinarySearchTree.comes_before = lambda a, b: a < b
-        self.assertEqual(lookup(Node("b", Node("a", None, None), Node("c", None, None)), "d",cb), False)
-        
+        T = Node("b", Node("a", None, None), Node("c", None, None))
+        self.assertEqual(lookup(T, "d", self.cb), False)
+
     def test_delete_2(self):
-        self.assertEqual(delete(Node("d", Node("b", Node("a", None, None), Node("c", None, None)), Node("e", None, None)), "d"), Node("e", Node("b", Node("a", None, None), Node("c", None, None)), None))
+        T = Node("d", Node("b", Node("a", None, None), Node("c", None, None)), Node("e", None, None))
+        self.assertEqual(
+            delete(T, "d", self.cb),
+            Node("e", Node("b", Node("a", None, None), Node("c", None, None)), None)
+        )
 
 class TestBST_Points(unittest.TestCase):
-    BinarySearchTree.comes_before = lambda a, b: a.dist < b.dist
-    p1 : Point2 = Point2(0,0) #dist 0
-    p2 : Point2 = Point2(1,0) #dist 1
-    p3 : Point2 = Point2(2,0) #dist 2
-    p4 : Point2 = Point2(3,0) #dist 3
-    p5 : Point2 = Point2(4,0) #dist 4
-    
+    def setUp(self):
+        self.cb = lambda a, b: a.dist < b.dist
+        self.p1 = Point2(0, 0)
+        self.p2 = Point2(1, 0)
+        self.p3 = Point2(2, 0)
+        self.p4 = Point2(3, 0)
+        self.p5 = Point2(4, 0)
+
     def test_is_empty_none_2(self):
         self.assertEqual(is_empty(None), True)
-    
+
     def test_is_empty_node_2(self):
-        p1 : Point2 = Point2(0,0) #dist 0
-        self.assertEqual(is_empty(Node(p1, None, None)), False)
-    
+        self.assertEqual(is_empty(Node(self.p1, None, None)), False)
+
     def test_insert_left_2(self):
-        p1 : Point2 = Point2(0,0) #dist 0
-        p2 : Point2 = Point2(1,0) #dist 1
-        self.assertEqual(insert(insert(None, p2), p1),
-                         Node(p2, Node(p1, None, None), None))
+        T = None
+        T = insert(T, self.p2, self.cb)
+        T = insert(T, self.p1, self.cb)
+        self.assertEqual(T, Node(self.p2, Node(self.p1, None, None), None))
+
     def test_insert_right_2(self):
-        p1 : Point2 = Point2(0,0) #dist 0
-        p2 : Point2 = Point2(1,0) #dist 1
-        self.assertEqual(insert(insert(None, p1), p2),
-                         Node(p1, None, Node(p2, None, None)))
+        T = None
+        T = insert(T, self.p1, self.cb)
+        T = insert(T, self.p2, self.cb)
+        self.assertEqual(T, Node(self.p1, None, Node(self.p2, None, None)))
+
     def test_lookup_true_2(self):
-        p1 : Point2 = Point2(0,0) #dist 0
-        p2 : Point2 = Point2(1,0) #dist 1
-        cb = BinarySearchTree.comes_before = lambda a, b: a.dist < b.dist
-        self.assertEqual(lookup(Node(p2, Node(p1, None, None), Node(p2, None, None)), p2,cb), True)
-        
+        T = Node(self.p2, Node(self.p1, None, None), Node(self.p2, None, None))
+        self.assertEqual(lookup(T, self.p2, self.cb), True)
+
     def test_lookup_false_2(self):
-        p1 : Point2 = Point2(0,0) #dist 0
-        p2 : Point2 = Point2(1,0) #dist 1
-        p3 : Point2 = Point2(2,0) #dist 2
-        p4 : Point2 = Point2(3,0) #dist 3
-        cb = BinarySearchTree.comes_before = lambda a, b: a.dist < b.dist
-        self.assertEqual(lookup(Node(p2, Node(p1, None, None), Node(p3, None, None)), p4,cb), False)
-        
+        T = Node(self.p2, Node(self.p1, None, None), Node(self.p3, None, None))
+        self.assertEqual(lookup(T, self.p4, self.cb), False)
+
     def test_delete_2(self):
-        p1 : Point2 = Point2(0,0) #dist 0
-        p2 : Point2 = Point2(1,0) #dist 1
-        p3 : Point2 = Point2(2,0) #dist 2
-        p4 : Point2 = Point2(3,0) #dist 3
-        p5 : Point2 = Point2(4,0) #dist 4
-        self.assertEqual(delete(Node(p4, Node(p2, Node(p1, None, None), Node(p3, None, None)), Node(p5, None, None)), p4), Node(p5, Node(p2, Node(p1, None, None), Node(p3, None, None)), None))    
-    
-    
+        T = Node(self.p4,
+                 Node(self.p2, Node(self.p1, None, None), Node(self.p3, None, None)),
+                 Node(self.p5, None, None))
+        self.assertEqual(
+            delete(T, self.p4, self.cb),
+            Node(self.p5, Node(self.p2, Node(self.p1, None, None), Node(self.p3, None, None)), None)
+        )
+
 if __name__ == "__main__":
     unittest.main()
