@@ -1,13 +1,11 @@
-import sys 
-import unittest 
-from typing import * 
-from dataclasses import dataclass 
-import math, time
+import sys
+import time
 from statistics import mean
-import matplotlib.pyplot as plt 
-import numpy as np 
-import random 
-from bst import *
+import matplotlib.pyplot as plt
+import numpy as np
+import random
+
+from bst import BinarySearchTree, insert, BinTree 
 sys.setrecursionlimit(10**6) 
  
 from bst import * 
@@ -86,5 +84,5 @@ def insert_time_graph_creation(n_max: int, TREES_PER_RUN: int = 10_000) -> None:
 
 
 if (__name__ == '__main__'): 
-    tree_height_graph_creation(15) 
-    insert_time_graph_creation(15)
+    tree_height_graph_creation(12) 
+    insert_time_graph_creation(12)

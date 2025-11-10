@@ -52,7 +52,7 @@ def lookup(BT: BinTree, val: Any, cb: Callable[[Any, Any], bool]) -> bool:
             elif cb(v, val):
                 return lookup(r, val, cb)
             else:
-                return False 
+                raise ValueError("CB incosistent")
 
 # Return True if the binary tree is empty (None), otherwise False.
 def is_empty(bst: BinTree) -> bool:
@@ -61,25 +61,25 @@ def is_empty(bst: BinTree) -> bool:
             return True
         case Node(_, _, _):
             return False
+        
+def min_value(n: Node) -> Any:
+    while isinstance(n.left, Node):
+        n = n.left
+    return n.value
+
 
 # Delete one occurrence of a value from the binary tree using comparator cb and return the resulting tree.
 def delete(BT: BinTree, val: Any, cb: Callable[[Any, Any], bool]) -> BinTree:
-    def min_value(n: Node) -> Any:
-        while isinstance(n.left, Node):
-            n = n.left
-        return n.value
-
     match BT:
         case None:
             return None
         case Node(v, l, r):
             if (not cb(val, v)) and (not cb(v, val)):
                 if l is None or r is None:
-                    return l or r
+                    raise ValueError("Value is not in the Binary tree")
                 m = min_value(r)          
                 return Node(m, l, delete(r, m, cb))
             if cb(val, v):
                 return Node(v, delete(l, val, cb), r)
             else:
                 return Node(v, l, delete(r, val, cb))
-            
