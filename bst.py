@@ -72,14 +72,21 @@ def min_value(n: Node) -> Any:
 def delete(BT: BinTree, val: Any, cb: Callable[[Any, Any], bool]) -> BinTree:
     match BT:
         case None:
-            return None
+            raise ValueError("Value is not in the Binary tree")
         case Node(v, l, r):
             if (not cb(val, v)) and (not cb(v, val)):
-                if l is None or r is None:
-                    raise ValueError("Value is not in the Binary tree")
-                m = min_value(r)          
+                if l is None and r is None:
+                    return None
+                if l is None:
+                    return r
+                if r is None:
+                    return l
+                m = min_value(r)
+                match m:
+                    case Node(mv, _, _):
+                        m = mv
                 return Node(m, l, delete(r, m, cb))
             if cb(val, v):
                 return Node(v, delete(l, val, cb), r)
-            else:
-                return Node(v, l, delete(r, val, cb))
+            return Node(v, l, delete(r, val, cb))
+        
