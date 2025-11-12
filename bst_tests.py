@@ -4,15 +4,28 @@ from typing import *
 from dataclasses import dataclass 
 sys.setrecursionlimit(10**6) 
 
-from bst import * 
-def cb_int(a, b)-> bool: 
-    return a < b
+from bst import *
 
-def cb_str(a, b)-> bool:
-    return a < b
+#when cb compares int, this is the function
+def cb_int(a :int, b :int ) -> bool: 
+    if a < b:
+        return True
+    else:
+        return False
 
-def cb_point(a, b)-> bool:
-    return a.dist < b.dist
+#when cb compares int, this is the function
+def cb_str(a: str, b: str)-> bool:
+    if a < b:
+        return True
+    else:
+        return False
+
+#when cb compares int, this is the function
+def cb_point(a : Point2, b : Point2)-> bool:
+    if a.dist < b.dist:
+        return True
+    else:
+        return False
 
 
 class TestBST_int(unittest.TestCase):
